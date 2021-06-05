@@ -9,7 +9,9 @@ import john.kingsley.currencyconverter.data.Currency
 import john.kingsley.currencyconverter.data.Rate
 import john.kingsley.currencyconverter.data.repository.CurrencyRepository
 import john.kingsley.currencyconverter.data.util.handleError
+import kotlinx.coroutines.Delay
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -41,9 +43,8 @@ class MainViewModel(context: Context): ViewModel(){
     }
 
     fun getRates(amount: Double, currency: String){
-
         viewModelScope.launch(Dispatchers.IO) {
-
+            delay(1000)
             val it = repo.getRates(amount,currency)
             if(it.isNotEmpty()){
                 ratesLiveData.postValue(it)

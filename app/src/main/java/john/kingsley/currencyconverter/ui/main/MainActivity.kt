@@ -20,6 +20,8 @@ import john.kingsley.currencyconverter.data.util.FetchDataWorker
 import john.kingsley.currencyconverter.databinding.ActivityMainBinding
 import john.kingsley.currencyconverter.ui.main.adapter.RecyclerViewAdapter
 import john.kingsley.currencyconverter.ui.main.adapter.SpinnerAdapter
+import kotlinx.coroutines.Delay
+import java.util.concurrent.Delayed
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
