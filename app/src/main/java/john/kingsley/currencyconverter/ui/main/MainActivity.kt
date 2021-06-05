@@ -1,5 +1,6 @@
 package john.kingsley.currencyconverter.ui.main
 
+import android.icu.util.TimeUnit
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,9 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Constraints
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import john.kingsley.currencyconverter.R
 import john.kingsley.currencyconverter.data.Currency
 import john.kingsley.currencyconverter.data.Rate
+import john.kingsley.currencyconverter.data.util.FetchDataWorker
 import john.kingsley.currencyconverter.databinding.ActivityMainBinding
 import john.kingsley.currencyconverter.ui.main.adapter.RecyclerViewAdapter
 import john.kingsley.currencyconverter.ui.main.adapter.SpinnerAdapter
@@ -37,6 +42,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         binding.rates.layoutManager = LinearLayoutManager(this)
         binding.rates.adapter = rateAdapter
 
+        //observe currency live data to populate spinner
         viewModel.currencyLiveData.observe(this, Observer {
             val adapter =
                 SpinnerAdapter(
@@ -49,12 +55,24 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             binding.spinner.onItemSelectedListener = this
         })
 
+        //observer rates livedata to populate recyclerview
         viewModel.ratesLiveData.observe(this, Observer {
             rates.clear()
             rates.addAll(it)
             rateAdapter?.notifyDataSetChanged()
             binding.progressBar.visibility = View.GONE
         })
+
+
+        ///Work manager to fetch data every 30 mins
+        val constraints = Constraints.Builder()
+            .setRequiresCharging(true)
+            .build()
+        val work = PeriodicWorkRequestBuilder<FetchDataWorker>(30, java.util.concurrent.TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .build()
+        val workManager = WorkManager.getInstance(this.applicationContext)
+        workManager.enqueue(work)
 
     }
 
